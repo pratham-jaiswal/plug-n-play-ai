@@ -146,36 +146,9 @@ def _get_hw_stats():
 
     # ── macOS ─────────────────────────────────────────────────────
     else:
-        import subprocess
-        ram = 0.0
+        # User requested to skip macOS usage to avoid any potential permission/execution issues
         cpu = 0.0
-        try:
-            out = subprocess.check_output(["vm_stat"], text=True)
-            stats = {}
-            for line in out.splitlines():
-                if ":" in line:
-                    k, _, v = line.partition(":")
-                    stats[k.strip()] = int(v.strip().rstrip("."))
-            page = 4096
-            total_pages = stats.get("Pages free", 0) + stats.get("Pages active", 0) \
-                        + stats.get("Pages inactive", 0) + stats.get("Pages wired down", 0) \
-                        + stats.get("Pages speculative", 0)
-            used_pages  = stats.get("Pages active", 0) + stats.get("Pages wired down", 0)
-            if total_pages > 0:
-                ram = round(used_pages / total_pages * 100, 1)
-        except Exception:
-            pass
-        try:
-            out = subprocess.check_output(
-                ["top", "-l", "2", "-n", "0", "-stats", "cpu"], text=True)
-            for line in out.splitlines():
-                if "CPU usage" in line:
-                    parts = line.replace(",", "").split()
-                    for i, p in enumerate(parts):
-                        if p.endswith("%") and i > 0 and parts[i-1] in ("user", "sys"):
-                            cpu += float(p.rstrip("%"))
-        except Exception:
-            pass
+        ram = 0.0
         return cpu, ram
 
 
