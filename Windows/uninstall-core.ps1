@@ -321,7 +321,6 @@ Write-Host "==========================================================" -Foregro
 Write-Host ""
 Write-Host "  [1] Remove selected model(s) (one / many / all)" -ForegroundColor Yellow
 Write-Host "  [2] Remove all downloaded files (except base files)" -ForegroundColor Yellow
-Write-Host "  [A] Run both" -ForegroundColor Green
 Write-Host "  [Q] Quit" -ForegroundColor DarkGray
 Write-Host ""
 
@@ -331,10 +330,6 @@ if ([string]::IsNullOrWhiteSpace($choice)) { $choice = "q" }
 switch ($choice) {
     "1" { Run-ModelRemover }
     "2" { Run-DownloadedDataCleanup }
-    "a" {
-        Run-ModelRemover
-        Run-DownloadedDataCleanup
-    }
     default {
         Write-Host ""
         Write-Host "Uninstall cancelled." -ForegroundColor Yellow
