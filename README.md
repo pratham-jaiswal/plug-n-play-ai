@@ -87,6 +87,9 @@ Optimized for Windows, macOS, and Linux via the built-in Ollama/Llama-CPP bridge
 | 7   | **Mistral NeMo 12B**       | `TECHNICAL`  | 7.5 GB  |  12 GB   | 10 GB\*  | Coding, math, and logical tasks     |
 | 8   | **Llama 3.1 70B**          |  `FRONTIER`  | 42.5 GB |  64 GB   |  48 GB   | Ultimate reasoning - Near-human     |
 | 9   | **DeepSeek-R1 32B**        | `REASONING`  | 19.9 GB |  32 GB   |  24 GB   | "Thinking" model - Complex logic    |
+| 10  | **SmolLM2 1.7B** | `ULTRA-LIGHT`| 1.1 GB  |   2 GB   |   1 GB   | Battery saver - Mobile optimized    |
+| 11  | **Qwen 2.5 1.5B** |  `STANDARD`  | 1.0 GB  |   2 GB   |   1 GB   | Fast Multilingual - Low overhead    |
+| 12  | **Phi 3.5 Mini (Mobile)** | `MOBILE-LOGIC`| 2.4 GB  |   4 GB   |   2 GB   | Logic-heavy - High efficiency       |
 
 > **\*Note on VRAM**: 12B models can run on 8GB GPUs via partial offloading, but 10GB+ is required for full GPU acceleration.
 
