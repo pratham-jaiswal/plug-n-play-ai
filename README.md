@@ -22,6 +22,45 @@ With a unified architecture, you can initialize your AI models once and choose t
 
 ---
 
+## 🏗️ Understanding the Engine: GGUF & Quantization
+
+To achieve "Plug & Play" performance on consumer hardware, this environment relies on specific file formats and mathematical optimizations.
+
+### What is GGUF?
+**GGUF (GPT-Generated Unified Format)** is the binary format used to store the AI models in this project. It is the successor to the older GGML format and is designed for fast loading and high compatibility.
+
+### Why GGUF?
+
+Unlike standard "safetensors" used by data scientists, GGUF is designed for **Inference** (running the model). It contains all the metadata the engine needs in a single file, allowing it to run on CPUs, NVIDIA GPUs, or Apple’s Metal framework with zero extra configuration.
+
+
+
+### The Magic of Bits & Quantization
+Standard AI models are usually released in **16-bit (FP16)** precision. This means every "weight" (connection) in the AI's brain takes up a lot of memory. To make a 8B parameter model fit on a standard 8GB RAM laptop, we use **Quantization**.
+
+* **Weights/Bits:** Think of "bits" as the level of detail in a photo. A 16-bit model is a high-res image. A **4-bit** or **6-bit** quantized model is like a compressed JPEG—it looks almost identical but takes up 70% less space.
+* **Performance vs. Precision:** By reducing a model from 16-bit to 4-bit, we can fit a much larger, "smarter" model into your RAM without losing significant intelligence.
+
+### What are K-Quants?
+In your model library, you will see terms like `Q4_K_M` or `Q6_K`. These are **K-Quants** (K-Symmetrically Quantized weights). 
+* **The Logic:** Instead of compressing every single weight the same way, K-Quants are "smart." They keep the most important parts of the AI's "brain" at higher precision and compress the less important parts more aggressively.
+* **The Result:** A `Q4_K_M` (4-bit Medium) model often performs nearly as well as the original 16-bit version but runs 4x faster and fits on a portable USB drive.
+
+
+
+---
+
+### Comparison of Quantization Levels
+
+| Quant Level | Quality Loss | Size Reduction | Recommended For |
+| :--- | :--- | :--- | :--- |
+| **Q8_0** | Negligible | ~50% | High-end PCs with 24GB+ VRAM |
+| **Q6_K** | Very Low | ~60% | The "Golden Standard" for quality |
+| **Q4_K_M** | Low | ~75% | **Best Balance** (Used for most models in this kit) |
+| **Q2_K** | High | ~85% | Ultra-lightweight / Mobile / 4GB RAM |
+
+---
+
 ## 🚀 Core Features
 
 - **Zero Dependency Setup:** Ships with portable Python and isolated engine binaries. No system permissions, registry edits, or package managers required.
