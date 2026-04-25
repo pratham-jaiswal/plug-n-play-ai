@@ -145,6 +145,22 @@ Open the respective OS folder and run the `start` script:
 
 The engine will spin up securely in the background, and your default web browser will automatically open the locally-served Chat UI.
 
+### Optional: Uninstall / Cleanup
+
+If you want to remove models or clear downloaded runtime data while keeping base project files:
+
+- **Windows:** run `Windows/uninstall.bat`
+- **macOS:** run `Mac/uninstall.command`
+- **Linux:** run `bash Linux/uninstall.sh`
+- **Android (Termux):** run `bash Android/uninstall.sh`
+
+Uninstaller options:
+
+- **`[1]` Remove selected model(s)**  
+  Choose **one**, **many**, or **all** installed models.
+- **`[2]` Remove all downloaded files (except base files)**  
+  Clears downloaded models, runtime binaries/caches, portable Python/runtime artifacts, and chat data.
+
 ---
 
 ## 🏠 Local Disk Installation
