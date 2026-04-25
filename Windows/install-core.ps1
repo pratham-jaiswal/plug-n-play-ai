@@ -151,7 +151,7 @@ if ($UserChoice.Trim().ToLower() -eq "all") {
                     $SelectedModels += $found
                 }
             } else {
-                Write-Host "  Invalid number '$num' - skipping (valid: 1-$($ModelCatalog.Count))" -ForegroundColor Red
+                Write-Host "  Invalid number '$num' - skipping" -ForegroundColor Red
             }
         } else {
             Write-Host "  Unrecognized input '$t' - skipping" -ForegroundColor Red

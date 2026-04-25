@@ -10,7 +10,7 @@ echo  This will download and configure AI models onto
 echo  your USB drive. You'll get to CHOOSE which models
 echo  to install from a curated list.
 echo.
-echo   - 6 preset models (uncensored + standard)
+echo   - Multiple preset models (uncensored + standard + heavy)
 echo   - Custom model support (bring your own GGUF)
 echo   - Minimum USB space: 8 GB (16 GB recommended)
 echo.

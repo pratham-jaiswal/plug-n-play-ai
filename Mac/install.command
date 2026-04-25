@@ -160,7 +160,7 @@ CUSTOM_PROMPT=""
 CHOICE_LOWER=$(echo "$USER_CHOICE" | tr '[:upper:]' '[:lower:]' | tr -d ' ')
 
 if [ "$CHOICE_LOWER" = "all" ]; then
-    SELECTED_NUMS=(1 2 3 4 5 6)
+    SELECTED_NUMS=("${MODEL_NUMS[@]}")
 else
     IFS=',' read -ra TOKENS <<< "$CHOICE_LOWER"
     for TOKEN in "${TOKENS[@]}"; do
@@ -175,7 +175,7 @@ else
                 for S in "${SELECTED_NUMS[@]}"; do [ "$S" -eq "$T" ] && ALREADY=true && break; done
                 $ALREADY || SELECTED_NUMS+=("$T")
             else
-                echo -e "${RED}  Invalid number '$T' - skipping (valid: 1-6)${RST}"
+                echo -e "${RED}  Invalid number '$T' - skipping${RST}"
             fi
         else
             echo -e "${RED}  Unrecognized input '$T' - skipping${RST}"
