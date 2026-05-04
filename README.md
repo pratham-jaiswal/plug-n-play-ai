@@ -1,24 +1,31 @@
 # Plug & Play AI ⚡
 
-**Plug & Play AI** is a _fully air-gapped, zero-dependency, plug-and-play Local AI environment_ designed to run seamlessly from your **local hard drive** or a **portable USB/SSD**. It bypasses complex installations by natively executing large language models directly on your hardware with no internet required.
+**Plug & Play AI** is a _fully air-gapped, zero-dependency, plug-and-play Local AI environment_ designed to run seamlessly from your **local hard drive** or a **portable USB/SSD**. 
 
-With a unified architecture, you can initialize your AI models once and choose to keep them on your system or carry them with you across Windows, macOS, Linux, and Android.
+> [!IMPORTANT]
+> **Fork Notice:** This project is a fork of [techjarves/USB-Uncensored-LLM](https://github.com/techjarves/USB-Uncensored-LLM). While the original repository remains active, this version introduces significant architectural changes focused on true offline autonomy and cross-platform resource centralization.
+>
+> **Hardware Disclaimer:** Due to hardware limitations, this fork has been **tested only on Windows**. While installers for macOS, Linux, and Android have been updated with the new logic, they remain untested. If you are on these platforms, feel free to test, update, and submit a PR!
+>
+> **Technical Architecture & Usage:**
+> Plug & Play AI is an environment designed for **Computational Sovereignty**. This system supports both standard and uncensored/ablated model weights. By choosing uncensored models, users can utilize tools where internal refusal mechanisms have been mathematically suppressed, ensuring the AI remains a neutral, high-utility tool for research and creative logic without forced lecturing.
+>
+> **Disclaimer:**
+> By using this environment, the user acknowledges that they have the option to load unfiltered models and are responsible for their own prompts. Use with discretion.
 
 🎥 **Watch the Original Setup & Demo Video:** [https://youtu.be/60PSXsoXc8A](https://youtu.be/60PSXsoXc8A)
 
-<div align="center" style="border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
-  <p style="color: #e6edf3; font-weight: bold; margin-bottom: 10px;">TECHNICAL ARCHITECTURE NOTICE</p>
-  <p style="color: #8b949e; font-size: 13.5px; line-height: 1.6; text-align: left;">
-    <strong>Plug & Play AI</strong> is an environment designed for <strong>Computational Sovereignty</strong>. 
-    This system utilizes ablated and uncensored model weights where internal refusal mechanisms have been mathematically suppressed. 
-    This ensures the AI remains a neutral, high-utility tool for research and creative logic tasks without forced lecturing or refusal triggers.
-  </p>
-  <p style="color: #7d8590; font-size: 12px; margin-top: 15px; border-top: 1px solid #30363d; padding-top: 15px;">
-    By initializing this environment, the user acknowledges that the system provides unfiltered outputs. 
-    Users are responsible for their own prompts and for ensuring their use of the software complies with applicable regulations. 
-    Use with discretion.
-  </p>
-</div>
+---
+
+## 🛠️ Key Enhancements in this Fork
+
+Compared to the original repository, this fork introduces the following improvements:
+
+*   **True Offline-First Architecture:** The original repo relies on online CDNs for fonts, Markdown rendering, and code highlighting. This fork automatically downloads and localizes all vendor assets (Marked, Highlight.js, etc.) during the installation stage, ensuring the UI works in 100% air-gapped environments.
+*   **Centralized Resource Management:** Instead of redundant lists across different platform scripts, this version utilizes a **Centralized Model & Vendor Catalog**. This ensures zero "version drift"—all platforms pull from the same JSON configurations.
+*   **Expanded Model Library:** Includes presets for **larger model scales** and high-efficiency **iMatrix (Importance Matrix)** quantized models for better intelligence-to-size ratios.
+*   **Integrated Uninstaller:** Added a dedicated uninstaller script to cleanly remove specific models or wipe the entire runtime environment without affecting base files.
+*   **UI/UX Refinements:** Fixed minor display bugs and optimized the local Python HTTP server for faster response times.
 
 ---
 
@@ -33,77 +40,19 @@ To achieve "Plug & Play" performance on consumer hardware, this environment reli
 
 Unlike standard "safetensors" used by data scientists, GGUF is designed for **Inference** (running the model). It contains all the metadata the engine needs in a single file, allowing it to run on CPUs, NVIDIA GPUs, or Apple’s Metal framework with zero extra configuration.
 
-
-
 ### The Magic of Bits & Quantization
-Standard AI models are usually released in **16-bit (FP16)** precision. This means every "weight" (connection) in the AI's brain takes up a lot of memory. To make a 8B parameter model fit on a standard 8GB RAM laptop, we use **Quantization**.
 
-* **Weights/Bits:** Think of "bits" as the level of detail in a photo. A 16-bit model is a high-res image. A **4-bit** or **6-bit** quantized model is like a compressed JPEG—it looks almost identical but takes up 70% less space.
-* **Performance vs. Precision:** By reducing a model from 16-bit to 4-bit, we can fit a much larger, "smarter" model into your RAM without losing significant intelligence.
+Standard AI models are usually released in **16-bit (FP16)** precision. To fit large, powerful models onto standard consumer hardware, we use **Quantized** versions. This mathematical optimization reduces the memory footprint while preserving intelligence.
 
-### What are K-Quants?
-In your model library, you will see terms like `Q4_K_M` or `Q6_K`. These are **K-Quants** (K-Symmetrically Quantized weights). 
-* **The Logic:** Instead of compressing every single weight the same way, K-Quants are "smart." They keep the most important parts of the AI's "brain" at higher precision and compress the less important parts more aggressively.
-* **The Result:** A `Q4_K_M` (4-bit Medium) model often performs nearly as well as the original 16-bit version but runs 4x faster and fits on a portable USB drive.
-
-
-
----
-
-### Comparison of Quantization Levels
+*   **K-Quants:** A "smart" compression technique that identifies and keeps the most critical parts of the AI's "brain" at higher precision while compressing less vital data.
+*   **iMatrix (NEW):** Importance Matrix quantization uses data-driven calibration to analyze which weights are most active during reasoning. This minimizes the "compression brain-fog" effect, often making a 4-bit **IQ4** model perform as intelligently as a traditional 6-bit model.
 
 | Quant Level | Quality Loss | Size Reduction | Recommended For |
 | :--- | :--- | :--- | :--- |
 | **Q8_0** | Negligible | ~50% | High-end PCs with 24GB+ VRAM |
-| **Q6_K** | Very Low | ~60% | The "Golden Standard" for quality |
-| **Q4_K_M** | Low | ~75% | **Best Balance** (Used for most models in this kit) |
-| **Q2_K** | High | ~85% | Ultra-lightweight / Mobile / 4GB RAM |
-
----
-
-## 🚀 Core Features
-
-- **Zero Dependency Setup:** Ships with portable Python and isolated engine binaries. No system permissions, registry edits, or package managers required.
-- **Offline-First UI:** Runtime dependencies (scripts, styles, and fonts) are now bootstrapped locally during installation. The UI works perfectly in air-gapped environments with **zero CDN heartbeats**.
-- **Centralized Configuration:** All platform installers consume shared JSON catalogs for models and assets, ensuring zero "version drift" across different operating systems.
-- **Cross-Platform Interoperability:** Uses an intelligent `Shared` volume system — download your 5GB+ AI models _once_, and use them natively on Windows, macOS, and Linux without duplication.
-- **Censorship Free:** Integrates cutting-edge ablative and heretic fine-tuned models for completely unfiltered interactions.
-- **Network Proxied UI:** The custom Python HTTP server instantly serves a blazing-fast dark mode UI. Access the AI from your phone or tablet on the same WiFi network without complex CORS configuration.
-- **Hardware Accelerated:** Uses a custom-compiled engine under the hood, natively capitalizing on AVX CPU instructions, NVIDIA CUDA, or Apple Metal GPU accelerators dynamically.
-
----
-
-## 💻 System Requirements
-
-Before preparing your drive, ensure you have:
-
-- **Storage:** A USB 3.0+ flash drive or SSD with an absolute minimum of **8 GB** free space (16 GB is **highly** recommended).
-- **RAM:** The host computer should have at least **8 GB of system memory** to run the 2B/4B models, and **16 GB of memory** to fluidly run the 9B/12B models.
-
----
-
-## 📂 Folder Architecture
-
-The project is structured to strictly isolate operating system executables while securely unifying heavy model weights to save precious portable storage capacity.
-
-```text
-[Portable USB Drive]
- ├── 📁 Android     # Native Android (Termux) installers & launchers
- ├── 📁 Linux       # Native Ubuntu/Debian offline installers & launchers
- ├── 📁 Mac         # Native macOS offline installers & launchers
- ├── 📁 Windows     # Native Windows offline automatic UI menus
- └── 📁 Shared      # Unified Data System
-     ├── 📁 bin         (Holds isolated engine executables)
-     ├── 📁 config      (NEW: Shared JSON catalogs for models & assets)
-     ├── 📁 vendor      (NEW: Local UI assets: Marked, Highlight.js, Fonts)
-     ├── 📁 chat_data   (Houses cross-platform persistent conversation history)
-     ├── 📁 models      (HuggingFace GGUF Weights & local database mapping)
-     └── 📁 python      (Isolated portable python environment)
-```
-
----
-
-Here is the fully updated documentation for your portable AI environment, incorporating the latest **Gemma 4 E4B** specifications and the mandatory categories for your project.
+| **Q6_K** | Very Low | ~60% | The "Golden Standard" for high fidelity |
+| **Q4_K_M** | Low | ~75% | **Best Balance** (The default for this kit) |
+| **IQ4_XS** | Minimal | ~80% | Ultra-efficient iMatrix optimization |
 
 ---
 
@@ -130,7 +79,8 @@ Optimized for Windows, macOS, and Linux via the built-in Ollama/Llama-CPP bridge
 | 11  | **Qwen 2.5 1.5B** |  `STANDARD`  | 1.0 GB  |   2 GB   |   1 GB   | Fast Multilingual - Low overhead    |
 | 12  | **Phi 3.5 Mini (Mobile)** | `MOBILE-LOGIC`| 2.4 GB  |   4 GB   |   2 GB   | Logic-heavy - High efficiency       |
 
-> **\*Note on VRAM**: 12B models can run on 8GB GPUs via partial offloading, but 10GB+ is required for full GPU acceleration.
+> [!NOTE]
+> **\*VRAM**: 12B models can run on 8GB GPUs via partial offloading, but 10GB+ is required for full GPU acceleration.
 
 ---
 
@@ -154,11 +104,12 @@ The installer supports custom `.gguf` downloads. If you have a specific model fr
 2.  Paste the direct download URL for the GGUF file.
 3.  The system will automatically generate a `Modelfile` and import it into the local engine.
 
-> **Warning:** Running uncensored models allows the AI to generate content without safety filters. Use responsibly.
+> [!WARNING]
+> Running uncensored models allows the AI to generate content without safety filters. Use responsibly.
 
 ---
 
-## ⚙️ Quick Start Guide
+## 🚀 Quick Start Guide
 
 ### Step 1: Initialize the Engine & UI Assets
 
@@ -171,10 +122,9 @@ Depending on the computer you are currently plugged into, navigate into the resp
 
 > **Note:** Initializing downloads the execution engine specific to that computer **and** bootstraps local UI vendor assets (fonts/libraries) to the `Shared/vendor` folder for a true offline experience.
 
-### Step 2: Download AI Models
+### Step 2: Download Models
 
-It is highly recommended to run the model download phase via a **Windows PC** (`Windows/install.bat`), which provides an interactive, terminal-based catalog to easily select and download highly curated models.
-_(If you do not have a Windows PC, simply download your `.gguf` weights from HuggingFace and place them into the `Shared/models` folder manually)._
+Run the installer again and select your models from the interactive menu. They will be stored in `Shared/models`.
 
 ### Step 3: Launch
 
@@ -205,19 +155,24 @@ Uninstaller options:
 
 ---
 
-## 🏠 Local Disk Installation
+## 📂 Folder Architecture
 
-While this project is optimized for USB portability, it works beautifully as a lightweight local AI setup on your primary computer.
+The project is structured to strictly isolate operating system executables while securely unifying heavy model weights to save precious portable storage capacity.
 
-**How to Install Locally:**
-
-1.  **Download/Clone** this repository to a folder on your `C:\` or `D:\` drive.
-2.  Navigate to the **Windows** (or Mac/Linux) folder.
-3.  Run **`install.bat`** and choose your desired models.
-4.  The system will download everything into that local folder.
-5.  Run **`start-fast-chat.bat`** to begin.
-
-_Benefit:_ Running from an internal SSD is significantly faster than a USB drive, resulting in near-instant AI model loading!
+```text
+[Portable USB Drive / Local Disk]
+ ├── 📁 Android     # Native Android (Termux) installers & launchers
+ ├── 📁 Linux       # Native Ubuntu/Debian offline installers & launchers
+ ├── 📁 Mac         # Native macOS offline installers & launchers
+ ├── 📁 Windows     # Native Windows offline automatic UI menus
+ └── 📁 Shared      # Unified Data System
+     ├── 📁 bin         (Holds isolated engine executables)
+     ├── 📁 config      (NEW: Shared JSON catalogs for models & assets)
+     ├── 📁 vendor      (NEW: Local UI assets: Marked, Highlight.js, Fonts)
+     ├── 📁 chat_data   (Houses cross-platform persistent conversation history)
+     ├── 📁 models      (HuggingFace GGUF Weights & local database mapping)
+     └── 📁 python      (Isolated portable python environment)
+```
 
 ---
 
@@ -259,6 +214,22 @@ The AI engine starts and Chrome opens automatically with the chat UI.
 
 ---
 
+## 🏠 Local Disk Installation
+
+While this project is optimized for USB portability, it works beautifully as a lightweight local AI setup on your primary computer.
+
+**How to Install Locally:**
+
+1.  **Download/Clone** this repository to a folder on your `C:\` or `D:\` drive.
+2.  Navigate to the **Windows** (or Mac/Linux) folder.
+3.  Run **`install.bat`** and choose your desired models.
+4.  The system will download everything into that local folder.
+5.  Run **`start-fast-chat.bat`** to begin.
+
+_Benefit:_ Running from an internal SSD is significantly faster than a USB drive, resulting in near-instant AI model loading!
+
+---
+
 ## 📱 LAN Mobile Access
 
 To use the Heavyweight AI from your phone while lounging on the couch:
@@ -272,8 +243,8 @@ To use the Heavyweight AI from your phone while lounging on the couch:
 
 ## 🛠️ Troubleshooting
 
-- **Offline UI Rendering:** If fonts or icons fail to load in air-gapped mode, re-run your OS installer to ensure the `Shared/vendor` assets were correctly bootstrapped.
-- **The script instantly closes on Windows:** You likely have legacy Windows App Execution Aliases turned on. Run the script via a command prompt to see the error log.
-- **Ollama Engine Not Found:** You attempted to run the `start` script before the `install` script. Run your OS's installer first!
+* **UI Rendering:** If fonts or icons fail to load in air-gapped mode, re-run the installer to ensure `Shared/vendor` assets were correctly bootstrapped.
+* **Non-Windows Platforms:** Due to hardware limitations, I am currently only able to test and verify functionality on **Windows**. While the scripts for macOS, Linux, and Android have been updated to use the new centralized architecture, they remain unverified on native hardware. If you encounter errors on these platforms, please report them or submit a PR!
+* **Ollama Engine Not Found:** This usually occurs if the `start` script is run before the `install` script. Ensure you run your OS-specific installer first to pull the necessary binaries.
 
 ---
