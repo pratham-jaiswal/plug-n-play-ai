@@ -100,6 +100,7 @@
   </style>
 
   <style>
+    /* DESIGN TOKENS Gemini/ChatGPT hybrid palette */
     :root {
       --font: 'Inter', sans-serif;
       --sb-w: 260px;
@@ -180,6 +181,7 @@
       --orange: #f29900;
     }
 
+    /* RESET + BASE */
     *,
     *::before,
     *::after {
@@ -216,6 +218,7 @@
       border-radius: 4px;
     }
 
+    /* LAYOUT SHELL */
     #app {
       display: flex;
       height: 100vh;
@@ -223,6 +226,7 @@
       overflow: hidden;
     }
 
+    /* SIDEBAR ChatGPT flavour */
     #sidebar {
       width: var(--sb-w);
       min-width: var(--sb-w);
@@ -443,6 +447,7 @@
       display: block;
     }
 
+    /* MAIN PANEL */
     #main {
       flex: 1;
       display: flex;
@@ -656,6 +661,42 @@
       gap: 8px;
     }
 
+    .sys-divider {
+      border: 0;
+      border-top: 1px solid var(--bd);
+      margin: 2px 0;
+      opacity: 0.9;
+    }
+
+    .sys-subrow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sys-select {
+      background: var(--bg);
+      border: 1px solid var(--bd);
+      color: var(--t1);
+      border-radius: var(--radius);
+      font-size: 12.5px;
+      padding: 7px 10px;
+      min-width: 180px;
+      font-family: var(--font);
+      outline: none;
+    }
+
+    .sys-select:focus {
+      border-color: var(--bd2);
+      box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.12);
+    }
+
+    .sys-hint {
+      font-size: 11px;
+      color: var(--t3);
+    }
+
     .sys-btn {
       padding: 6px 16px;
       border-radius: var(--radius-pill);
@@ -687,6 +728,7 @@
       color: var(--t1);
     }
 
+    /* CHAT AREA */
     #chat {
       flex: 1;
       overflow-y: auto;
@@ -695,6 +737,7 @@
       flex-direction: column;
     }
 
+    /* WELCOME SCREEN Gemini style */
     #welcome {
       flex: 1;
       display: flex;
@@ -886,6 +929,7 @@
       color: #ea863b;
     }
 
+    /* MESSAGES */
     #msgs {
       max-width: 780px;
       width: 100%;
@@ -1246,6 +1290,7 @@
       }
     }
 
+    /* INPUT AREA Gemini/ChatGPT style */
     #inp-area {
       padding: 8px 20px 18px;
       flex-shrink: 0;
@@ -1383,6 +1428,7 @@
       box-shadow: 0 2px 20px var(--shd);
     }
 
+    /* Model Selector Row (INSIDE input, at top) */
     .model-row {
       display: flex;
       align-items: center;
@@ -1565,7 +1611,7 @@
       border-color: var(--bd2);
     }
 
-    /* ÔöÇÔöÇ Text row (textarea + action buttons) ÔöÇÔöÇ */
+    /* Text row (textarea + action buttons) */
     .text-row {
       display: flex;
       align-items: flex-end;
@@ -1672,6 +1718,7 @@
       max-width: 740px;
     }
 
+    /* TOASTS */
     #toasts {
       position: fixed;
       bottom: 90px;
@@ -1722,6 +1769,7 @@
       }
     }
 
+    /* RESPONSIVE */
     @media (max-width: 768px) {
       #sidebar {
         position: fixed;
@@ -1791,6 +1839,7 @@
 
 <body>
   <div id="app">
+    <!-- SIDEBAR -->
     <aside id="sidebar" role="navigation" aria-label="Chat history">
       <div class="sb-hd">
         <div class="sb-brand">
@@ -1875,6 +1924,17 @@
           <button class="sys-btn secondary" id="clear-global-btn">
             Clear
           </button>
+        </div>
+        <hr class="sys-divider" />
+        <div class="sys-row">
+          <label for="log-mode-select">Logging</label>
+          <div class="sys-subrow">
+            <select id="log-mode-select" class="sys-select">
+              <option value="errors_only">Errors only (Recommended)</option>
+              <option value="all">Everything (Verbose)</option>
+            </select>
+            <span class="sys-hint">Saved per device. Reduce disk writes by using errors only.</span>
+          </div>
         </div>
       </div>
 
@@ -2000,6 +2060,9 @@
   <div id="toasts"></div>
 
   <script>
+    /* Portable AI Fast Chat Core Logic (unchanged) */
+
+    // Config
     const IS_SERVED =
       location.protocol === 'http:' || location.protocol === 'https:';
     const OLLAMA = IS_SERVED ? '/ollama' : 'http://127.0.0.1:11434';
@@ -2024,11 +2087,13 @@
       models: [],
       model: localStorage.getItem('g-model') || '',
       globalSys: '',
+      logMode: localStorage.getItem('logMode') || 'errors_only',
 
       // Attachments (multi-file)
       attachments: [],
     };
 
+    // DOM
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
 
@@ -2061,6 +2126,7 @@
       sysBtn: $('#sys-prompt-btn'),
       sysPanel: $('#sys-panel'),
       sysTa: $('#sys-ta'),
+      logModeSel: $('#log-mode-select'),
       sysSet: $('#set-global-btn'),
       sysClr: $('#clear-global-btn'),
       warn: $('#vision-warn'),
@@ -2118,25 +2184,32 @@
           if (r.ok) {
             const s = await r.json();
             S.globalSys = s.globalSystemPrompt || '';
+            S.logMode = s.logMode === 'all' ? 'all' : 'errors_only';
           }
         } catch { }
       } else {
         S.globalSys = localStorage.getItem('globalSystemPrompt') || '';
+        S.logMode = localStorage.getItem('logMode') || 'errors_only';
       }
       updateSysUI();
     }
     async function saveGlobalPrompt() {
       S.globalSys = D.sysTa.value.trim();
+      S.logMode = D.logModeSel.value === 'all' ? 'all' : 'errors_only';
       if (IS_SERVED) {
         try {
           await fetch('/api/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ globalSystemPrompt: S.globalSys }),
+            body: JSON.stringify({
+              globalSystemPrompt: S.globalSys,
+              logMode: S.logMode,
+            }),
           });
         } catch { }
       } else {
         localStorage.setItem('globalSystemPrompt', S.globalSys);
+        localStorage.setItem('logMode', S.logMode);
       }
       updateSysUI();
       toast('Default prompt saved');
@@ -2144,21 +2217,46 @@
     async function clearGlobalPrompt() {
       S.globalSys = '';
       D.sysTa.value = '';
+      S.logMode = D.logModeSel.value === 'all' ? 'all' : 'errors_only';
       if (IS_SERVED) {
         try {
           await fetch('/api/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ globalSystemPrompt: '' }),
+            body: JSON.stringify({
+              globalSystemPrompt: '',
+              logMode: S.logMode,
+            }),
           });
         } catch { }
       } else {
         localStorage.removeItem('globalSystemPrompt');
+        localStorage.setItem('logMode', S.logMode);
       }
       updateSysUI();
       toast('Default prompt cleared');
     }
+    async function saveLogMode() {
+      S.logMode = D.logModeSel.value === 'all' ? 'all' : 'errors_only';
+      if (IS_SERVED) {
+        try {
+          await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ logMode: S.logMode }),
+          });
+        } catch { }
+      } else {
+        localStorage.setItem('logMode', S.logMode);
+      }
+      toast(
+        S.logMode === 'all'
+          ? 'Logging: everything'
+          : 'Logging: errors only',
+      );
+    }
     function updateSysUI() {
+      D.logModeSel.value = S.logMode === 'all' ? 'all' : 'errors_only';
       if (S.globalSys) D.sysBtn.classList.add('has-global');
       else D.sysBtn.classList.remove('has-global');
     }
@@ -2890,7 +2988,7 @@
         ts: c.ts || Date.now(),
         model: c.model || '',
         sys: c.sys || '',
-        // migrate old `messages` key `msgs`; fall back to []
+        // migrate old `messages` key ÔåÆ `msgs`; fall back to []
         msgs: Array.isArray(c.msgs)
           ? c.msgs
           : Array.isArray(c.messages)
@@ -2959,6 +3057,7 @@
         D.sysPanel.classList.toggle('open');
         toggleModelMenu(false);
       });
+      D.logModeSel.addEventListener('change', saveLogMode);
       D.sysSet.addEventListener('click', saveGlobalPrompt);
       D.sysClr.addEventListener('click', clearGlobalPrompt);
 
