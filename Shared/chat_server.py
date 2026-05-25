@@ -27,6 +27,7 @@ import queue
 import uuid
 from datetime import datetime
 from urllib.parse import urlparse
+from socketserver import ThreadingMixIn # Use stdlib threaded HTTP server implementation.
 
 # Optional: psutil for hardware stats (graceful fallback to native APIs if not installed)
 try:
@@ -670,6 +671,9 @@ class ChatHandler(http.server.BaseHTTPRequestHandler):
         ollama_path = self.path[len("/ollama"):]
         target_url = OLLAMA_HOST + ollama_path
 
+        if ollama_path == "/api/tags":
+            time.sleep(8)
+
         # Read request body if present
         body = None
         content_length = int(self.headers.get("Content-Length", 0))
@@ -679,6 +683,29 @@ class ChatHandler(http.server.BaseHTTPRequestHandler):
         if body:
             try:
                 payload = json.loads(body)
+
+                # Reject invalid chat requests with no selected model.
+                # Prevents accidental empty-model upstream calls.
+                if ollama_path == "/api/chat":
+                    model_name = payload.get("model", "").strip()
+
+                    if not model_name:
+                        self.send_response(400)
+                        self._cors_headers()
+                        self.end_headers()
+                        self.wfile.write(
+                            json.dumps({
+                                "error": "No model specified"
+                            }).encode()
+                        )
+
+                        _log_event(
+                            logging.ERROR,
+                            "Rejected chat request with empty model name",
+                            request_context=request_context,
+                        )
+                        return
+
             except Exception:
                 payload = {}
 
@@ -830,20 +857,25 @@ class ChatHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"error": str(e)}).encode())
 
 
-class ThreadedHTTPServer(http.server.HTTPServer):
-    """Handle each request in a new thread for concurrent streaming."""
-    def process_request(self, request, client_address):
-        thread = threading.Thread(target=self._handle, args=(request, client_address))
-        thread.daemon = True
-        thread.start()
+# class ThreadedHTTPServer(http.server.HTTPServer):
+#     """Handle each request in a new thread for concurrent streaming."""
+#     def process_request(self, request, client_address):
+#         thread = threading.Thread(target=self._handle, args=(request, client_address))
+#         thread.daemon = True
+#         thread.start()
 
-    def _handle(self, request, client_address):
-        try:
-            self.finish_request(request, client_address)
-        except Exception:
-            self.handle_error(request, client_address)
-        finally:
-            self.shutdown_request(request)
+#     def _handle(self, request, client_address):
+#         try:
+#             self.finish_request(request, client_address)
+#         except Exception:
+#             self.handle_error(request, client_address)
+#         finally:
+#             self.shutdown_request(request)
+
+# Replaced custom thread management with stdlib ThreadingMixIn.
+# More reliable cleanup behavior during streaming disconnects.
+class ThreadedHTTPServer(ThreadingMixIn, http.server.HTTPServer):
+    daemon_threads = True
 
 HOST_HARDWARE_SPECS = _get_hardware_specs()
 LOGGER, LOG_LISTENER = configure_logging()

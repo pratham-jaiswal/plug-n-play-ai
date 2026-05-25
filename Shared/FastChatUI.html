@@ -2030,9 +2030,12 @@
       globalSys: '',
       logMode: localStorage.getItem('logMode') || 'errors_only',
 
-        // Attachments (multi-file)
-        attachments: [],
-      };
+      // Attachments (multi-file)
+      attachments: [],
+
+      // Engine readiness state. Prevents requests before models finish loading.
+      engineReady: false,
+    };
 
       // ÔöÇÔöÇ DOM ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
       const $ = (s) => document.querySelector(s);
@@ -2209,26 +2212,40 @@
         );
       }
 
-      async function fetchModels() {
-        try {
-          const r = await fetch(OLLAMA + '/api/tags');
-          if (!r.ok) throw new Error();
-          const d = await r.json();
-          S.models = d.models || [];
-          renderModelMenu();
-          if (
-            S.models.length &&
-            (!S.model || !S.models.find((m) => m.name === S.model))
-          ) {
-            applyModel(S.models[0].name);
-          } else if (S.model) {
-            applyModel(S.model);
-          }
-        } catch {
-          D.modelMenu.innerHTML =
-            '<div style="padding:16px;font-size:12px;color:var(--red);text-align:center;">Engine Offline</div>';
+    async function fetchModels() {
+      try {
+        const r = await fetch(OLLAMA + '/api/tags');
+        if (!r.ok) throw new Error();
+        const d = await r.json();
+        S.models = d.models || [];
+
+        // Engine ready only when at least one model is available.
+        // Prevents empty-model /api/chat requests during startup.
+        S.engineReady = S.models.length > 0;
+
+        renderModelMenu();
+        if (
+          S.models.length &&
+          (!S.model || !S.models.find((m) => m.name === S.model))
+        ) {
+          applyModel(S.models[0].name);
+
+          // Refresh send button state after model load.
+          updateSend();
+        } else if (S.model) {
+          applyModel(S.model);
         }
+      } catch {
+        // Clear stale UI/model state when engine becomes unavailable.
+        S.models = [];
+        S.model = '';
+        S.engineReady = false;
+        D.modelMenu.innerHTML =
+          '<div style="padding:16px;font-size:12px;color:var(--red);text-align:center;">Engine Offline</div>';
+        // Re-disable send button while engine is offline/loading.
+        updateSend();
       }
+    }
 
       function renderModelMenu() {
         if (!S.models.length) return;
@@ -2510,28 +2527,40 @@
         return S.convs.find((c) => c.id === S.curId);
       }
 
-      // ÔöÇÔöÇ Send / Stream to Ollama ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-      async function sendMsg(text) {
-        if ((!text.trim() && !S.attachments.length) || S.streaming) return;
+    // Send / Stream to Ollama
+    async function sendMsg(text) {
+      // Prevent startup race conditions or unloaded engines.
+      if (!S.engineReady) {
+        toast('Engine still loading...');
+        return;
+      }
 
-        let conv = getConv();
-        if (!conv) {
-          conv = {
-            id: gid(),
-            title: 'New chat',
-            msgs: [],
-            ts: Date.now(),
-            model: S.model,
-            sys: D.sysTa.value.trim(),
-          };
-          S.convs.unshift(conv);
-          S.curId = conv.id;
-        } else {
-          conv.model = S.model;
-          conv.sys = D.sysTa.value.trim();
-          // Defensive: heal conv that somehow has no msgs array
-          if (!Array.isArray(conv.msgs)) conv.msgs = [];
-        }
+      // Prevent invalid empty model submissions.
+      if (!S.model) {
+        toast('No model selected.');
+        return;
+      }
+
+      if ((!text.trim() && !S.attachments.length) || S.streaming) return;
+
+      let conv = getConv();
+      if (!conv) {
+        conv = {
+          id: gid(),
+          title: 'New chat',
+          msgs: [],
+          ts: Date.now(),
+          model: S.model,
+          sys: D.sysTa.value.trim(),
+        };
+        S.convs.unshift(conv);
+        S.curId = conv.id;
+      } else {
+        conv.model = S.model;
+        conv.sys = D.sysTa.value.trim();
+        // Defensive: heal conv that somehow has no msgs array
+        if (!Array.isArray(conv.msgs)) conv.msgs = [];
+      }
 
         const baseText = text.trim();
         const docAttachments = S.attachments.filter((a) => a.type === 'doc');
@@ -2648,48 +2677,48 @@
           const dec = new TextDecoder();
           if (contentEl) contentEl.innerHTML = '';
 
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            const chunk = dec.decode(value, { stream: true });
-            for (const line of chunk.split('\n')) {
-              if (!line.trim()) continue;
-              try {
-                const p = JSON.parse(line);
-                if (p.message?.content) {
-                  aiMsg.content += p.message.content;
-                  if (contentEl) contentEl.textContent = aiMsg.content;
-                  scrollEnd();
-                }
-              } catch {}
-            }
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = dec.decode(value, { stream: true });
+          for (const line of chunk.split('\n')) {
+            if (!line.trim()) continue;
+            try {
+              const p = JSON.parse(line);
+              if (p.message?.content) {
+                aiMsg.content += p.message.content;
+                if (contentEl) contentEl.textContent = aiMsg.content;
+                scrollEnd();
+              }
+            } catch { }
           }
-          if (contentEl) {
-            contentEl.innerHTML = renderMd(aiMsg.content);
-            contentEl.querySelectorAll('pre code').forEach((b) => {
-              if (!b.classList.contains('hljs')) hljs.highlightElement(b);
-            });
-          }
-        } catch (err) {
-          if (err.name === 'AbortError') {
-            if (aiMsg.content) {
-              if (contentEl) contentEl.innerHTML = renderMd(aiMsg.content);
-            } else if (contentEl)
-              contentEl.innerHTML =
-                '<span style="color:var(--t3);font-style:italic;">[Stopped]</span>';
-          } else {
-            if (contentEl)
-              contentEl.innerHTML = `<span style="color:var(--red);">ÔÜá ${esc(err.message)}</span>`;
-            conv.msgs.pop();
-          }
-        } finally {
-          S.streaming = false;
-          updateSend();
-          save();
-          scrollEnd();
-          setTimeout(() => D.inp.focus(), 100);
         }
+        if (contentEl) {
+          contentEl.innerHTML = renderMd(aiMsg.content);
+          contentEl.querySelectorAll('pre code').forEach((b) => {
+            if (!b.classList.contains('hljs')) hljs.highlightElement(b);
+          });
+        }
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          if (aiMsg.content) {
+            if (contentEl) contentEl.innerHTML = renderMd(aiMsg.content);
+          } else if (contentEl)
+            contentEl.innerHTML =
+              '<span style="color:var(--t3);font-style:italic;">[Stopped]</span>';
+        } else {
+          if (contentEl)
+            contentEl.innerHTML = `<span style="color:var(--red);">ÔÜá ${esc(err.message)}</span>`;
+          conv.msgs.pop();
+        }
+      } finally {
+        S.streaming = false;
+        updateSend();
+        save();
+        scrollEnd();
+        setTimeout(() => D.inp.focus(), 100);
       }
+    }
 
       function stopStream() {
         if (S.abort) S.abort.abort();
@@ -2855,36 +2884,36 @@
         D.ov.classList.toggle('on', S.sbOpen && window.innerWidth <= 768);
       }
 
-      function updateSend() {
-        const has = D.inp.value.trim().length > 0 || S.attachments.length > 0;
-        D.iw.classList.toggle('ht', has);
-        if (S.streaming) {
-          D.send.className = 'ib2 stbtn';
-          D.send.innerHTML = '<i class="fa-solid fa-stop"></i>';
-          D.send.disabled = false;
-        } else {
-          D.send.className = 'ib2 sbtn' + (has ? ' on' : '');
-          D.send.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
-          D.send.disabled = !has;
-        }
+    function updateSend() {
+      const has = D.inp.value.trim().length > 0 || S.attachments.length > 0;
+      D.iw.classList.toggle('ht', has);
+      if (S.streaming) {
+        D.send.className = 'ib2 stbtn';
+        D.send.innerHTML = '<i class="fa-solid fa-stop"></i>';
+        D.send.disabled = false;
+      } else {
+        D.send.className = 'ib2 sbtn' + (has ? ' on' : '');
+        D.send.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+        D.send.disabled = !has;
       }
-      function autoResize() {
-        D.inp.style.height = 'auto';
-        D.inp.style.height = Math.min(D.inp.scrollHeight, 200) + 'px';
-      }
-      function scrollEnd() {
-        D.chat.scrollTop = D.chat.scrollHeight;
-      }
-      function updateTitle() {
-        D.tbTitle.textContent = getConv()?.title || '';
-      }
-      function toast(msg) {
-        const t = document.createElement('div');
-        t.className = 'toast';
-        t.textContent = msg;
-        D.toasts.appendChild(t);
-        setTimeout(() => t.remove(), 2600);
-      }
+    }
+    function autoResize() {
+      D.inp.style.height = 'auto';
+      D.inp.style.height = Math.min(D.inp.scrollHeight, 200) + 'px';
+    }
+    function scrollEnd() {
+      D.chat.scrollTop = D.chat.scrollHeight;
+    }
+    function updateTitle() {
+      D.tbTitle.textContent = getConv()?.title || '';
+    }
+    function toast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      D.toasts.appendChild(t);
+      setTimeout(() => t.remove(), 2600);
+    }
 
       // ÔöÇÔöÇ Persistence ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
       let saveTimer = null;
