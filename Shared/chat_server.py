@@ -671,9 +671,6 @@ class ChatHandler(http.server.BaseHTTPRequestHandler):
         ollama_path = self.path[len("/ollama"):]
         target_url = OLLAMA_HOST + ollama_path
 
-        if ollama_path == "/api/tags":
-            time.sleep(8)
-
         # Read request body if present
         body = None
         content_length = int(self.headers.get("Content-Length", 0))
