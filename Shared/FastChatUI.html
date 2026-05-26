@@ -99,24 +99,24 @@
     }
   </style>
 
-  <style>
-    /* DESIGN TOKENS Gemini/ChatGPT hybrid palette */
-    :root {
-      --font: 'Inter', sans-serif;
-      --sb-w: 260px;
-      --spd: 0.2s;
-      --radius: 12px;
-      --radius-lg: 18px;
-      --radius-pill: 999px;
-    }
+    <style>
+      /* DESIGN TOKENS - Gemini/ChatGPT hybrid palette */
+      :root {
+        --font: 'Inter', sans-serif;
+        --sb-w: 260px;
+        --spd: 0.2s;
+        --radius: 12px;
+        --radius-lg: 18px;
+        --radius-pill: 999px;
+      }
 
-    [data-theme='dark'] {
-      /* Backgrounds ChatGPT layering */
-      --bg: #212121;
-      --bg2: #171717;
-      --bg3: #2a2a2a;
-      --bg-u: #2f2f2f;
-      --bg-inp: #2f2f2f;
+      [data-theme='dark'] {
+        /* Backgrounds - ChatGPT layering */
+        --bg: #212121;
+        --bg2: #171717;
+        --bg3: #2a2a2a;
+        --bg-u: #2f2f2f;
+        --bg-inp: #2f2f2f;
 
       /* Hovers */
       --bgh: rgba(255, 255, 255, 0.07);
@@ -138,10 +138,10 @@
       --ov: rgba(0, 0, 0, 0.6);
       --tst: #3a3a3a;
 
-      /* Brand gradient Gemini palette */
-      --grad1: #4285f4;
-      --grad2: #9b72cb;
-      --grad3: #d96570;
+        /* Brand gradient  Gemini palette */
+        --grad1: #4285f4;
+        --grad2: #9b72cb;
+        --grad3: #d96570;
 
       /* Status */
       --green: #6dd58c;
@@ -189,7 +189,6 @@
       padding: 0;
       box-sizing: border-box;
     }
-
     html,
     body {
       height: 100%;
@@ -204,15 +203,12 @@
         color var(--spd);
       -webkit-font-smoothing: antialiased;
     }
-
     ::-webkit-scrollbar {
       width: 4px;
     }
-
     ::-webkit-scrollbar-track {
       background: transparent;
     }
-
     ::-webkit-scrollbar-thumb {
       background: var(--scr);
       border-radius: 4px;
@@ -226,7 +222,7 @@
       overflow: hidden;
     }
 
-    /* SIDEBAR ChatGPT flavour */
+    /* SIDEBAR  ChatGPT flavour */
     #sidebar {
       width: var(--sb-w);
       min-width: var(--sb-w);
@@ -241,7 +237,6 @@
       z-index: 50;
       overflow: hidden;
     }
-
     #sidebar.off {
       transform: translateX(-100%);
       min-width: 0;
@@ -467,7 +462,6 @@
       z-index: 10;
       min-height: 56px;
     }
-
     .tb-btn {
       background: none;
       border: none;
@@ -483,12 +477,10 @@
       align-items: center;
       justify-content: center;
     }
-
     .tb-btn:hover {
       background: var(--bgh);
       color: var(--t1);
     }
-
     .tb-title {
       font-size: 14.5px;
       font-weight: 500;
@@ -499,7 +491,6 @@
       text-overflow: ellipsis;
       max-width: 300px;
     }
-
     .tb-sp {
       flex: 1;
     }
@@ -737,7 +728,7 @@
       flex-direction: column;
     }
 
-    /* WELCOME SCREEN Gemini style */
+    /* WELCOME SCREEN - Gemini style */
     #welcome {
       flex: 1;
       display: flex;
@@ -748,13 +739,11 @@
       gap: 0;
       animation: welcomeFade 0.55s ease;
     }
-
     @keyframes welcomeFade {
       from {
         opacity: 0;
         transform: translateY(20px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
@@ -860,7 +849,7 @@
       font-weight: 400;
     }
 
-    /* Suggestion chips Gemini style */
+    /* Suggestion chips - Gemini style */
     .sg {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -868,7 +857,6 @@
       max-width: 600px;
       width: 100%;
     }
-
     .sc {
       display: flex;
       align-items: center;
@@ -884,14 +872,12 @@
         transform 0.12s,
         box-shadow 0.17s;
     }
-
     .sc:hover {
       background: var(--bgh);
       border-color: var(--bd2);
       transform: translateY(-1px);
       box-shadow: 0 4px 16px var(--shd);
     }
-
     .sc .si {
       width: 32px;
       height: 32px;
@@ -902,28 +888,23 @@
       font-size: 13px;
       flex-shrink: 0;
     }
-
     .sc .st {
       font-size: 13px;
       color: var(--t2);
       line-height: 1.45;
     }
-
     .ib {
       background: rgba(66, 133, 244, 0.12);
       color: #4285f4;
     }
-
     .ip {
       background: rgba(155, 114, 203, 0.12);
       color: #9b72cb;
     }
-
     .it {
       background: rgba(52, 168, 124, 0.12);
       color: #34a87c;
     }
-
     .io {
       background: rgba(234, 134, 59, 0.12);
       color: #ea863b;
@@ -938,7 +919,6 @@
       display: none;
       flex-direction: column;
     }
-
     #msgs.on {
       display: flex;
     }
@@ -1012,7 +992,7 @@
       max-width: 82%;
     }
 
-    /* User bubble ChatGPT style */
+    /* User bubble - ChatGPT style */
     .ub {
       background: var(--bg-u);
       border-radius: 22px;
@@ -1290,7 +1270,7 @@
       }
     }
 
-    /* INPUT AREA Gemini/ChatGPT style */
+    /* INPUT AREA  Gemini/ChatGPT style */
     #inp-area {
       padding: 8px 20px 18px;
       flex-shrink: 0;
@@ -1406,7 +1386,7 @@
       color: var(--red);
     }
 
-    /* The main input wrapper pill/rounded-rectangle */
+    /* The main input wrapper - pill/rounded-rectangle */
     .iw {
       max-width: 740px;
       width: 100%;
@@ -1421,7 +1401,6 @@
       overflow: visible;
       position: relative;
     }
-
     .iw:focus-within,
     .iw.ht {
       border-color: var(--bd2);
@@ -1617,7 +1596,6 @@
       align-items: flex-end;
       padding: 6px 8px 8px 16px;
     }
-
     #msg-inp {
       flex: 1;
       background: transparent;
@@ -1631,7 +1609,6 @@
       line-height: 1.55;
       padding: 6px 4px;
     }
-
     #msg-inp::placeholder {
       color: var(--t3);
     }
@@ -1731,7 +1708,6 @@
       align-items: center;
       pointer-events: none;
     }
-
     .toast {
       background: var(--tst);
       color: var(--t1);
@@ -1745,24 +1721,20 @@
       white-space: nowrap;
       border: 1px solid var(--bd);
     }
-
     @keyframes toastIn {
       from {
         opacity: 0;
         transform: translateY(8px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
-
     @keyframes toastOut {
       from {
         opacity: 1;
       }
-
       to {
         opacity: 0;
         transform: translateY(-6px);
@@ -1777,34 +1749,26 @@
         top: 0;
         height: 100%;
       }
-
       #sidebar.off {
         transform: translateX(-100%);
       }
-
       .sg {
         grid-template-columns: 1fr;
       }
-
       .usr .mc {
         max-width: 88%;
       }
-
       .wt {
         font-size: 30px;
       }
-
       #inp-area {
         padding: 6px 12px 14px;
       }
-
       #msgs {
         padding: 16px 16px 12px;
       }
     }
-
     @media (prefers-reduced-motion: reduce) {
-
       *,
       *::before,
       *::after {
@@ -1830,13 +1794,11 @@
       pointer-events: none;
       z-index: 20;
     }
-
     #main {
       position: relative;
     }
   </style>
-</head>
-
+  </head>
 <body>
   <div id="app">
     <!-- SIDEBAR -->
@@ -1845,8 +1807,10 @@
         <div class="sb-brand">
           <div class="sb-brand-icon">
             <svg viewBox="0 0 24 24">
-              <path d="M12 2L14.09 8.26L21 9.27L16 14.14L17.18 21.02L12 17.77L6.82 21.02L8 14.14L3 9.27L9.91 8.26L12 2Z"
-                fill="white" />
+              <path
+                d="M12 2L14.09 8.26L21 9.27L16 14.14L17.18 21.02L12 17.77L6.82 21.02L8 14.14L3 9.27L9.91 8.26L12 2Z"
+                fill="white"
+              />
             </svg>
           </div>
           <span class="sb-brand-name">Portable AI</span>
@@ -1888,7 +1852,7 @@
           <span class="hidden sm:inline">Instructions</span>
         </button>
 
-        <!-- HW Stats hidden on mobile -->
+        <!-- HW Stats - hidden on mobile -->
         <div class="hw-bar hidden md:flex" id="hw-bar">
           <div class="hw-stat">
             <span style="color: var(--t3); font-size: 10px">CPU</span>
@@ -1997,13 +1961,23 @@
           <!-- File/image preview bar (inside the box) -->
           <div class="fbar" id="fbar"></div>
 
-          <!-- Model selector row ÔÇö INSIDE the input box at top -->
+          <!-- Model selector row  INSIDE the input box at top -->
           <div class="model-row">
             <div class="model-dd" id="model-dd">
-              <button class="model-btn" id="model-btn" aria-label="Select model">
+              <button
+                class="model-btn"
+                id="model-btn"
+                aria-label="Select model"
+              >
                 <svg viewBox="0 0 24 24">
                   <defs>
-                    <linearGradient id="mvg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient
+                      id="mvg"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
                       <stop offset="0%" stop-color="var(--grad1)" />
                       <stop offset="50%" stop-color="var(--grad2)" />
                       <stop offset="100%" stop-color="var(--grad3)" />
@@ -2060,9 +2034,9 @@
   <div id="toasts"></div>
 
   <script>
-    /* Portable AI Fast Chat Core Logic (unchanged) */
+    /* Portable AI | Fast Chat | Core Logic (unchanged) */
 
-    // Config
+    // Config 
     const IS_SERVED =
       location.protocol === 'http:' || location.protocol === 'https:';
     const OLLAMA = IS_SERVED ? '/ollama' : 'http://127.0.0.1:11434';
@@ -2091,6 +2065,9 @@
 
       // Attachments (multi-file)
       attachments: [],
+
+      // Engine readiness state. Prevents requests before models finish loading.
+      engineReady: false,
     };
 
     // DOM
@@ -2154,7 +2131,7 @@
       setInterval(fetchModels, 15000);
     }
 
-    // Hardware Stats
+    // Hardware Stats 
     async function pollHW() {
       if (!IS_SERVED) return;
       try {
@@ -2164,7 +2141,7 @@
         if (d.ram_percent === -1) return;
         setBar('cpu', d.cpu_percent);
         setBar('ram', d.ram_percent);
-      } catch { }
+      } catch {}
     }
     function setBar(type, pct) {
       const bar = $(`#${type}-bar`);
@@ -2261,7 +2238,7 @@
       else D.sysBtn.classList.remove('has-global');
     }
 
-    // Models
+    // Models 
     function isVision(name) {
       return VISION_MODELS.some((v) =>
         (name || '').toLowerCase().includes(v),
@@ -2274,18 +2251,32 @@
         if (!r.ok) throw new Error();
         const d = await r.json();
         S.models = d.models || [];
+
+        // Engine ready only when at least one model is available.
+        // Prevents empty-model /api/chat requests during startup.
+        S.engineReady = S.models.length > 0;
+
         renderModelMenu();
         if (
           S.models.length &&
           (!S.model || !S.models.find((m) => m.name === S.model))
         ) {
           applyModel(S.models[0].name);
+
+          // Refresh send button state after model load.
+          updateSend();
         } else if (S.model) {
           applyModel(S.model);
         }
       } catch {
+        // Clear stale UI/model state when engine becomes unavailable.
+        S.models = [];
+        S.model = '';
+        S.engineReady = false;
         D.modelMenu.innerHTML =
           '<div style="padding:16px;font-size:12px;color:var(--red);text-align:center;">Engine Offline</div>';
+        // Re-disable send button while engine is offline/loading.
+        updateSend();
       }
     }
 
@@ -2337,7 +2328,7 @@
       D.modelBtn.classList.toggle('open', shouldOpen);
     }
 
-    // File Attachments
+    // File Attachments 
     async function handleAttach(files) {
       const list = Array.from(files || []).filter(Boolean);
       if (!list.length) return;
@@ -2518,22 +2509,22 @@
       return true;
     }
 
-    // Conversation CRUD
-    function createConv() {
-      const c = {
-        id: gid(),
-        title: 'New chat',
-        msgs: [],
-        ts: Date.now(),
-        model: S.model,
-        sys: S.globalSys,
-      };
-      S.convs.unshift(c);
-      save();
-      switchConv(c.id);
-      renderSB();
-      D.inp.focus();
-    }
+      // Conversation CRUD 
+      function createConv() {
+        const c = {
+          id: gid(),
+          title: 'New chat',
+          msgs: [],
+          ts: Date.now(),
+          model: S.model,
+          sys: S.globalSys,
+        };
+        S.convs.unshift(c);
+        save();
+        switchConv(c.id);
+        renderSB();
+        D.inp.focus();
+      }
 
     function delConv(id) {
       S.convs = S.convs.filter((c) => c.id !== id);
@@ -2571,6 +2562,18 @@
 
     // Send / Stream to Ollama
     async function sendMsg(text) {
+      // Prevent startup race conditions or unloaded engines.
+      if (!S.engineReady) {
+        toast('Engine still loading...');
+        return;
+      }
+
+      // Prevent invalid empty model submissions.
+      if (!S.model) {
+        toast('No model selected.');
+        return;
+      }
+
       if ((!text.trim() && !S.attachments.length) || S.streaming) return;
 
       let conv = getConv();
@@ -2738,7 +2741,7 @@
               '<span style="color:var(--t3);font-style:italic;">[Stopped]</span>';
         } else {
           if (contentEl)
-            contentEl.innerHTML = `<span style="color:var(--red);">ÔÜá ${esc(err.message)}</span>`;
+            contentEl.innerHTML = `<span style="color:var(--red);">&#9888 ${esc(err.message)}</span>`;
           conv.msgs.pop();
         }
       } finally {
@@ -2754,7 +2757,7 @@
       if (S.abort) S.abort.abort();
     }
 
-    // Markdown
+    // Markdown 
     function setupMarked() {
       if (typeof marked === 'undefined') return;
       const rdr = new marked.Renderer();
@@ -2768,7 +2771,7 @@
               lang && hljs.getLanguage(lang)
                 ? hljs.highlight(code, { language: lang }).value
                 : hljs.highlightAuto(code).value;
-          } catch { }
+          } catch {}
         }
         return `<div class="cblk"><div class="cbh"><span>${dl}</span><button class="cbc-btn" onclick="copyCB(this)"><i class="fa-regular fa-copy"></i> Copy</button></div><pre><code class="hljs${sl ? ' language-' + sl : ''}">${hi}</code></pre></div>`;
       };
@@ -2780,7 +2783,7 @@
       return marked.parse(text, { breaks: true });
     }
 
-    // Rendering
+    // Rendering 
     function renderSB() {
       D.cvList.innerHTML = S.convs
         .map(
@@ -2867,7 +2870,7 @@
     </div>`;
     }
 
-    // Actions
+    // Actions 
     function copyMsg(id) {
       const m = getConv()?.msgs.find((x) => x.id === id);
       if (m)
@@ -2945,7 +2948,7 @@
       setTimeout(() => t.remove(), 2600);
     }
 
-    // Persistence
+    // Persistence 
     let saveTimer = null;
     function save() {
       if (IS_SERVED) {
@@ -2956,13 +2959,13 @@
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(S.convs),
-            }).catch(() => { }),
+            }).catch(() => {}),
           800,
         );
       } else {
         try {
           localStorage.setItem('g-convs', JSON.stringify(S.convs));
-        } catch (e) { }
+        } catch (e) {}
       }
     }
     async function load() {
@@ -2970,7 +2973,7 @@
         try {
           const r = await fetch('/api/chats');
           if (r.ok) S.convs = await r.json();
-        } catch { }
+        } catch {}
       } else {
         try {
           const d = localStorage.getItem('g-convs');
@@ -2981,14 +2984,14 @@
       }
       // Sanitize: heal any conversation that is missing required fields
       // (handles old schema that used `messages` instead of `msgs`, or any
-      //  partial/corrupted entries that snuck in from a previous version)
+      // partial/corrupted entries that snuck in from a previous version)
       S.convs = (Array.isArray(S.convs) ? S.convs : []).map((c) => ({
         id: c.id || gid(),
         title: c.title || 'Untitled',
         ts: c.ts || Date.now(),
         model: c.model || '',
         sys: c.sys || '',
-        // migrate old `messages` key ÔåÆ `msgs`; fall back to []
+        // migrate old `messages` key -> `msgs`; fall back to []
         msgs: Array.isArray(c.msgs)
           ? c.msgs
           : Array.isArray(c.messages)
@@ -3008,7 +3011,7 @@
       return d.innerHTML;
     }
 
-    // Events
+    // Events 
     function bind() {
       D.send.addEventListener('click', () =>
         S.streaming ? stopStream() : sendMsg(D.inp.value),
@@ -3090,5 +3093,4 @@
     init();
   </script>
 </body>
-
 </html>
