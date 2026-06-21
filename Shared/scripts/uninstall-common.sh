@@ -287,6 +287,22 @@ remove_all_downloaded() {
   remove_safe "$SHARED_DIR/chat_data" "chat_data"
 }
 
+remove_ollama_engine() {
+  echo ""
+  echo -e "${YLW}[1/1] Removing Ollama Engine...${RST}"
+
+  killall ollama ollama-linux ollama-darwin 2>/dev/null || true
+  sleep 1
+
+  remove_safe "$OLLAMA_BIN" "bin/ollama-$(echo "$PLATFORM" | sed 's/^l/l/;s/^m/d/')"
+  remove_safe "$OLLAMA_DATA" "models/ollama_data"
+  remove_safe "$OLLAMA_RUNTIME_SHARED" ".ollama-runtime (Shared)"
+  remove_safe "$OLLAMA_RUNTIME_MODELS" ".ollama-runtime (models)"
+
+  echo ""
+  echo -e "${GRN}Ollama engine removed. Your models are intact.${RST}"
+}
+
 run_model_remover_menu() {
   echo ""
   echo -e "${YLW}[1/2] Remove selected model(s)${RST}"
@@ -366,7 +382,8 @@ echo -e "${CYN}   PORTABLE AI UNINSTALLER (${PLATFORM})${RST}"
 echo -e "${CYN}==========================================================${RST}"
 echo ""
 echo "  [1] Remove selected model(s) (one / many / all)"
-echo "  [2] Remove all downloaded files (except base files)"
+echo "  [2] Remove Ollama engine (binaries & data)"
+echo "  [3] Remove all downloaded files (except base files)"
 echo "  [Q] Quit"
 echo ""
 read -r -p "Your choice: " choice
@@ -374,7 +391,8 @@ choice="$(echo "$choice" | tr '[:upper:]' '[:lower:]')"
 
 case "$choice" in
   1) run_model_remover_menu ;;
-  2) remove_all_downloaded ;;
+  2) remove_ollama_engine ;;
+  3) remove_all_downloaded ;;
   *)
     echo ""
     echo -e "${YLW}Uninstall cancelled.${RST}"

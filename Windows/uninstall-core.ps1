@@ -245,6 +245,21 @@ function Refresh-LegacyModelfile {
     }
 }
 
+function Run-OllamaRemover {
+    Write-Host ""
+    Write-Host "[1/1] Removing Ollama Engine..." -ForegroundColor Yellow
+
+    Stop-EngineProcesses
+
+    Remove-SafePath -Path $OllamaExe -Label "bin\ollama-windows.exe"
+    Remove-SafePath -Path $OllamaDataDir -Label "models\ollama_data"
+    Remove-SafePath -Path $OllamaRuntimeShared -Label ".ollama-runtime (Shared)"
+    Remove-SafePath -Path $OllamaRuntimeModels -Label ".ollama-runtime (models)"
+
+    Write-Host ""
+    Write-Host "Ollama engine removed. Your models are intact." -ForegroundColor Green
+}
+
 function Run-ModelRemover {
     Write-Host ""
     Write-Host "[1/2] Remove selected model(s)" -ForegroundColor Yellow
@@ -320,7 +335,8 @@ Write-Host "   PORTABLE AI UNINSTALLER                                " -Foregro
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "  [1] Remove selected model(s) (one / many / all)" -ForegroundColor Yellow
-Write-Host "  [2] Remove all downloaded files (except base files)" -ForegroundColor Yellow
+Write-Host "  [2] Remove Ollama engine (binaries & data)" -ForegroundColor Yellow
+Write-Host "  [3] Remove all downloaded files (except base files)" -ForegroundColor Yellow
 Write-Host "  [Q] Quit" -ForegroundColor DarkGray
 Write-Host ""
 
@@ -329,7 +345,8 @@ if ([string]::IsNullOrWhiteSpace($choice)) { $choice = "q" }
 
 switch ($choice) {
     "1" { Run-ModelRemover }
-    "2" { Run-DownloadedDataCleanup }
+    "2" { Run-OllamaRemover }
+    "3" { Run-DownloadedDataCleanup }
     default {
         Write-Host ""
         Write-Host "Uninstall cancelled." -ForegroundColor Yellow
