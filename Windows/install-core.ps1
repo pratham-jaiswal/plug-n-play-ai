@@ -400,7 +400,7 @@ Write-Host "      Saved model list to installed-models.txt" -ForegroundColor Dar
 # =================================================================
 Write-Host ""
 Write-Host "[6/7] Downloading Ollama AI Engine (Windows)..." -ForegroundColor Yellow
-$OllamaURL  = "https://github.com/ollama/ollama/releases/latest/download/ollama-windows-amd64.zip"
+$OllamaURL  = "https://github.com/ollama/ollama/releases/download/v0.24.0/ollama-windows-amd64.zip"
 $OllamaDest = "$USB_Drive\Shared\bin\ollama-windows-amd64.zip"
 $TempOllamaDir = "$USB_Drive\Shared\bin\temp_ollama"
 
@@ -464,16 +464,41 @@ if (-Not (Test-Path "$USB_Drive\Shared\bin\ollama-windows.exe")) {
     if ($modelsToImport.Count -gt 0) {
         Write-Host "      Starting Ollama temporarily to perform import..." -ForegroundColor DarkGray
         $ServerProcess = Start-Process -FilePath "$USB_Drive\Shared\bin\ollama-windows.exe" -ArgumentList "serve" -WindowStyle Hidden -PassThru
-        Start-Sleep -Seconds 5
 
+        Write-Host "      Waiting for Ollama to become ready..." -ForegroundColor DarkGray
+        $ready = $false
+        for ($i = 0; $i -lt 30; $i++) {
+            curl.exe -s http://127.0.0.1:11434/api/tags > $null 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                $ready = $true
+                break
+            }
+            Start-Sleep -Seconds 1
+        }
+        if (-Not $ready) {
+            Write-Host "      WARNING: Ollama did not respond on http://127.0.0.1:11434 within 30s" -ForegroundColor Red
+            Write-Host "      Import may fail or hang because the server is not ready." -ForegroundColor Red
+        }
+
+        $importErrors = @()
         foreach ($m in $modelsToImport) {
             Write-Host "      Importing $($m.Name)..." -ForegroundColor Yellow
-            try {
-                $null = & "$USB_Drive\Shared\bin\ollama-windows.exe" create $m.Local -f "Modelfile-$($m.Local)" 2>&1
+            $output = & "$USB_Drive\Shared\bin\ollama-windows.exe" create $m.Local -f "Modelfile-$($m.Local)" 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "      ERROR: Failed to import $($m.Name) (exit code $LASTEXITCODE)" -ForegroundColor Red
+                if ($output) {
+                    Write-Host "      Output:" -ForegroundColor DarkGray
+                    $output | ForEach-Object { Write-Host "        $_" -ForegroundColor DarkGray }
+                }
+                $importErrors += $m.Name
+                $downloadErrors += $m.Name
+            } else {
                 Write-Host "      $($m.Name) imported successfully!" -ForegroundColor Green
-            } catch {
-                Write-Host "      ERROR: Failed to import $($m.Name)" -ForegroundColor Red
             }
+        }
+
+        if ($importErrors.Count -gt 0) {
+            Write-Host "      Import finished with $($importErrors.Count) error(s)." -ForegroundColor Red
         }
 
         Write-Host "      Stopping temporary Ollama server..." -ForegroundColor DarkGray

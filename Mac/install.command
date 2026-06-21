@@ -425,7 +425,7 @@ echo ""
 echo -e "${YLW}[6/7] Downloading Ollama AI Engine (Mac)...${RST}"
 
 OLLAMA_BIN="$SHARED_BIN/ollama-darwin"
-ARCHIVE_URL="https://github.com/ollama/ollama/releases/latest/download/ollama-darwin.tgz"
+ARCHIVE_URL="https://github.com/ollama/ollama/releases/download/v0.24.0/ollama-darwin.tgz"
 
 # Validate: must exist, be a real Mach-O binary, and > 10 MB
 if [ -f "$OLLAMA_BIN" ] && is_macho "$OLLAMA_BIN" && file_ok "$OLLAMA_BIN" 10000000; then
@@ -497,11 +497,15 @@ else
             echo -e "${RED}      Skipping ${NAME} - GGUF file not found or incomplete${RST}"; return
         fi
         echo -e "${YLW}      Importing ${NAME}...${RST}"
-        "$OLLAMA_BIN" create "$LOCAL" -f "Modelfile-${LOCAL}" 2>&1
+        local output=$("$OLLAMA_BIN" create "$LOCAL" -f "Modelfile-${LOCAL}" 2>&1)
         if [ $? -eq 0 ]; then
             echo -e "${GRN}      ${NAME} imported successfully!${RST}"
         else
             echo -e "${RED}      ERROR: Failed to import ${NAME}${RST}"
+            if [ -n "$output" ]; then
+                echo -e "${DGR}      Output:${RST}"
+                echo "$output" | sed 's/^/        /'
+            fi
         fi
     }
 

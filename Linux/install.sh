@@ -460,7 +460,7 @@ else
     # Remove any stale/corrupted file
     rm -f "$OLLAMA_BIN"
 
-    ARCHIVE_URL="https://github.com/ollama/ollama/releases/latest/download/ollama-linux-amd64.tar.zst"
+    ARCHIVE_URL="https://github.com/ollama/ollama/releases/download/v0.24.0/ollama-linux-amd64.tar.zst"
 
     echo -e "      Downloading Ollama engine (streaming - stops after binary extracted)..."
     # Stream curl → tar: since bin/ollama is the FIRST entry in the archive,
@@ -530,11 +530,15 @@ else
             return
         fi
         echo -e "${YLW}      Importing ${NAME}...${RST}"
-        "$OLLAMA_BIN" create "$LOCAL" -f "Modelfile-${LOCAL}" 2>&1
+        local output=$("$OLLAMA_BIN" create "$LOCAL" -f "Modelfile-${LOCAL}" 2>&1)
         if [ $? -eq 0 ]; then
             echo -e "${GRN}      ${NAME} imported successfully!${RST}"
         else
             echo -e "${RED}      ERROR: Failed to import ${NAME}${RST}"
+            if [ -n "$output" ]; then
+                echo -e "${DGR}      Output:${RST}"
+                echo "$output" | sed 's/^/        /'
+            fi
         fi
     }
 
